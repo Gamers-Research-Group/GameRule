@@ -5,10 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Obstacle
-  - Hellephant
-  - ZomBear
-  - ZomBunny
-  - Bullet
+  - BlueTank
+  - RedTank
+  - Shell
   layers:
   - Default
   - TransparentFX

@@ -10,16 +10,16 @@ public class GameManager : MonoBehaviour
     private Light sunLight;
     private AudioSource audioSource;
 
-    private static readonly string[] ActorOrder = new string[] { "LightingReflection", "Environment", "Player", "Hellephant", "ZomBear", "ZomBunny", "HellephantSpawner", "ZomBearSpawner", "ZomBunnySpawner", "HellephantDead", "ZomBearDead", "ZomBunnyDead", "Bullet", "ShotLight", "Laser", "DamageCanvas", "HUDCanvas", "GameOver" };
+    private static readonly string[] ActorOrder = new string[] { "LevelArt", "BlueTank", "RedTank", "Shell", "ShellExplosion", "BlueAim", "RedAim", "RedHealth", "BlueHealth", "BlueWin", "RedWin", "CameraManager" };
 
-    public string GameName = "SURVIVAL_SHOOTER";
+    public string GameName = "TANKS";
     public Vector2 ScreenResolution = new Vector2(1920f, 1080f);
-    public Vector3 CameraPosition = new Vector3(0f, 6f, -7f);
-    public Vector3 CameraRotation = new Vector3(30f, 0f, 0f);
-    public Vector3 SunPosition = new Vector3(3.3899f, 10.902f, -5.8255f);
-    public Vector3 SunRotation = new Vector3(22.704f, 65.875f, -175.012f);
-    public Color SunColor = new Color32(195, 184, 255, 255);
-    public Color SunAmbientColor = new Color32(170, 180, 200, 255);
+    public Vector3 CameraPosition = new Vector3(-12f, 20f, 5f);
+    public Vector3 CameraRotation = new Vector3(50f, 60f, 0f);
+    public Vector3 SunPosition = new Vector3(0f, 10f, 0f);
+    public Vector3 SunRotation = new Vector3(54.3f, -26.2f, 10.5f);
+    public Color SunColor = new Color32(255, 200, 100, 255);
+    public Color SunAmbientColor = new Color32(180, 180, 180, 255);
     public Color BackgroundColor = new Color32(0, 0, 0, 255);
     public Vector3 Gravity = new Vector3(0f, -9.81f, 0f);
     public string SoundTrack
@@ -37,8 +37,6 @@ public class GameManager : MonoBehaviour
     public Vector3 Mouse = Vector3.zero;
     public Vector3 MouseWorld = Vector3.zero;
 
-    // Custom Global Variables
-    public float Score = 0f;
     void Start()
     {
         if (Instance == null)
