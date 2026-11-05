@@ -30,7 +30,7 @@ public static class Utils
                 case "sy": value = obj.transform.localScale.y; break;
                 case "sz": value = obj.transform.localScale.z; break;
                 case "Active": value = obj.activeSelf ? 1f : 0f; break;
-                case "value":
+                case "sliderValue":
                     var slider = obj.GetComponent<UnityEngine.UI.Slider>();
                     if (slider != null) value = slider.value;
                     break;
@@ -174,7 +174,7 @@ public static class Utils
                         script.GetType().GetField("Active").SetValue(script, value != 0);
                     break;
 
-                case "value":
+                case "sliderValue":
                     var slider = obj.GetComponent<UnityEngine.UI.Slider>();
                     if (slider != null) slider.value = value;
                     break;
@@ -359,7 +359,7 @@ public static class Utils
                 }
 
                 if (obj.GetComponent<UnityEngine.UI.Slider>() != null)
-                    properties.Add("value");
+                    properties.Add("sliderValue");
 
                 if (obj.GetComponent<UnityEngine.UI.Text>() != null)
                     properties.Add("text");

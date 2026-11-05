@@ -7,13 +7,7 @@
     "SunColor": [195, 184, 255],
     "SunAmbientColor": [170, 180, 200],
     "CustomVariables": [
-        {"name": "WaveNumber", "type": "int", "intValue": 1},
-        {"name": "TotalEnemies", "type": "int", "intValue": 10},
-        {"name": "GameDifficulty", "type": "string", "stringValue": "Hard"},
-        {"name": "PlayerLives", "type": "int", "intValue": 3},
-        {"name": "BonusActive", "type": "bool", "boolValue": true},
-        {"name": "RespawnPosition", "type": "Vector3", "arrayValue": [5, 0, 5]},
-        {"name": "GameSpeed", "type": "float", "floatValue": 1.5}
+        {"name": "Score", "type": "float", "floatValue": 0.0}
     ],
     "Cast": [
         {
@@ -30,10 +24,10 @@
             "PrefabName": "Player",
             "Tag":"Player",
             "Position": [0.0, 0.0, 0.0],
-            "Properties": ["speed=5", "rotSpeed=360", "lastHealth=100.0", "health=100.0", "score=0", "desp=7", "despX=0.28", "despY=0.3", "despZ=0.7", "moving=0"],
+            "Properties": ["speed=5", "rotSpeed=360", "lastHealth=100.0", "health=100.0", "offsetCam=7", "offsetX=0.28", "offsetY=0.3", "offsetZ=0.7", "moving=0"],
             "Script": [
                 {
-                    "Do": ["RotateTo(this.rotSpeed, #MouseWorld.x, #MouseWorld.y, #MouseWorld.z, this.x, this.y, this.z)", "Edit(#CameraPosition.x,this.x)", "Edit(#CameraPosition.z,this.z-this.desp)"]
+                    "Do": ["RotateTo(this.rotSpeed,#MouseWorld.x,#MouseWorld.y,#MouseWorld.z,this.x,this.y,this.z)", "Edit(#CameraPosition.x,this.x)", "Edit(#CameraPosition.z,this.z-this.offsetCam)"]
                 },
                 {
                     "When": ["Keyboard(RightArrow,press)"],
@@ -51,10 +45,9 @@
                     "When": ["Keyboard(DownArrow,press)"],
                     "Do": ["Move(this.speed, 0, 180, 0)", "Edit(this.moving,1)"]
                 },
-                { "When": ["Keyboard(RightArrow,up)"], "Do": ["Edit(this.moving,0)"] },
-                { "When": ["Keyboard(LeftArrow,up)"], "Do": ["Edit(this.moving,0)"] },
-                { "When": ["Keyboard(UpArrow,up)"], "Do": ["Edit(this.moving,0)"] },
-                { "When": ["Keyboard(DownArrow,up)"], "Do": ["Edit(this.moving,0)"] },
+                {   "When": ["Keyboard(RightArrow,up) OR Keyboard(LeftArrow,up) OR Keyboard(UpArrow,up) OR Keyboard(DownArrow,up)"], 
+                    "Do": ["Edit(this.moving,0)"] 
+                },
                 {
                     "When": ["Collision(Hellephant)"],
                     "Do": ["Edit(this.health,this.health-Hellephant.damage)", "PlaySound(PlayerHurt)"]
@@ -68,8 +61,8 @@
                     "Do": ["Edit(this.health,this.health-ZomBunny.damage)", "PlaySound(PlayerHurt)"]
                 },
                 {
-                    "When":["Compare(this.health<0)"],
-                    "Do":["Edit(GameOver.Active,1)", "PlaySound(PlayerDeath)", "Edit(this.moving,2)", "Edit(this.speed,0)"]
+                    "When":["Compare(this.health<=0)"],
+                    "Do":["Edit(GameOver.Active,1)", "PlaySound(PlayerDeath)", "Edit(this.moving,0)", "Edit(this.speed,0)"]
                 },
                 {
                     "When":["Compare(this.health==this.lastHealth)"],
@@ -80,19 +73,19 @@
                     "Do":["Edit(DamageCanvas.Active,1)", "Edit(this.lastHealth,this.health)"]
                 },
                 {
-                    "When": ["Touch(press, false)"],
-                    "Do": ["Spawn(Bullet, this, this.despX, this.despY, this.despZ)", "Spawn(Laser, this, this.despX, this.despY, this.despZ)", "Edit(ShotLight.Active,1)", "PlaySound(PlayerGunShot)", "PlayParticles(GunBarrelEnd)"]
+                    "When": ["Touch(press,false)"],
+                    "Do": ["Spawn(Bullet,this,this.offsetX,this.offsetY,this.offsetZ)", "Spawn(Laser,this,this.offsetX,this.offsetY,this.offsetZ)", "Edit(ShotLight.Active,1)", "PlaySound(PlayerGunShot)", "PlayParticles(GunBarrelEnd)"]
                 },
                 {
-                    "When": ["Compare(this.moving==0)"],
-                    "Do": ["Animate(Idle)"]
-                },
-                {
-                    "When": ["Compare(this.moving==1)"],
+                    "When": ["Check(this.moving)"],
                     "Do": ["Animate(Move)"]
                 },
                 {
-                    "When": ["Compare(this.moving==2)"],
+                    "When": ["NOT Check(this.moving) AND Compare(this.health>0)"],
+                    "Do": ["Animate(Idle)"]
+                },
+                {
+                    "When": ["NOT Check(this.moving) AND Compare(this.health<=0)"],
                     "Do": ["Animate(Death)"]
                 }
             ]
@@ -119,14 +112,14 @@
                 },
                 {
                     "When": ["Compare(this.health<=0)"],
-                    "Do": ["Edit(Player.score,Player.score+50)", "Spawn(HellephantDead, this)", "Delete(this)"]
+                    "Do": ["Edit(#Score,#Score+50)", "Spawn(HellephantDead,this)", "Delete(this)"]
                 },
                 {
-                    "When": ["Compare(this.moving==0)"],
+                    "When": ["NOT Check(this.moving)"],
                     "Do": ["Animate(Idle)"]
                 },
                 {
-                    "When": ["Compare(this.moving==1)"],
+                    "When": ["Check(this.moving)"],
                     "Do": ["Animate(Move)"]
                 }
             ]
@@ -136,7 +129,7 @@
             "PrefabName": "ZomBear",
             "Tag":"ZomBear",
             "Active": false,
-            "Properties": ["speed=3", "health=100", "damage=0.15", "moving=0"],
+            "Properties": ["speed=3", "health=200", "damage=0.2", "moving=0"],
             "Script": [
                 {
                     "Do": ["Edit(this.moving,1)", "NavigateTo(this.speed,Player.x,Player.y,Player.z)"]
@@ -151,14 +144,14 @@
                 },
                 {
                     "When": ["Compare(this.health<=0)"],
-                    "Do": ["Edit(Player.score,Player.score+10)", "Spawn(ZomBearDead, this)", "Delete(this)"]
+                    "Do": ["Edit(#Score,#Score+10)", "Spawn(ZomBearDead,this)", "Delete(this)"]
                 },
                 {
-                    "When": ["Compare(this.moving==0)"],
+                    "When": ["NOT Check(this.moving)"],
                     "Do": ["Animate(Idle)"]
                 },
                 {
-                    "When": ["Compare(this.moving==1)"],
+                    "When": ["Check(this.moving)"],
                     "Do": ["Animate(Move)"]
                 }
             ]
@@ -168,7 +161,7 @@
             "PrefabName": "ZomBunny",
             "Tag":"ZomBunny",
             "Active": false,
-            "Properties": ["speed=3", "health=100", "damage=0.15", "moving=0"],
+            "Properties": ["speed=4", "health=100", "damage=0.15", "moving=0"],
             "Script": [
                 {
                     "Do": ["Edit(this.moving,1)", "NavigateTo(this.speed,Player.x,Player.y,Player.z)"]
@@ -183,14 +176,14 @@
                 },
                 {
                     "When": ["Compare(this.health<=0)"],
-                    "Do": ["Edit(Player.score,Player.score+10)", "Spawn(ZomBunnyDead, this)", "Delete(this)"]
+                    "Do": ["Edit(#Score,#Score+10)", "Spawn(ZomBunnyDead,this)", "Delete(this)"]
                 },
                 {
-                    "When": ["Compare(this.moving==0)"],
+                    "When": ["NOT Check(this.moving)"],
                     "Do": ["Animate(Idle)"]
                 },
                 {
-                    "When": ["Compare(this.moving==1)"],
+                    "When": ["Check(this.moving)"],
                     "Do": ["Animate(Move)"]
                 }
             ]
@@ -200,14 +193,10 @@
             "PrefabName": "HellephantSpawner",
             "Position": [0.0, 0.0, 32.0],
             "Rotation": [0.0, -130.0, 0.0],
-            "Properties": ["spawnTime=300.0", "currentTime=0.0"],
             "Script": [
                 {
-                    "Do": ["Edit(this.currentTime,this.currentTime+1)"]
-                },
-                {
-                    "When": ["Compare(this.currentTime==this.spawnTime)"],
-                    "Do": ["Edit(this.currentTime,0)", "Spawn(Hellephant, this)"]
+                    "When": ["Timer(5)"],
+                    "Do": ["Spawn(Hellephant,this)"]
                 }
             ]
         },
@@ -216,14 +205,10 @@
             "PrefabName": "ZomBearSpawner",
             "Position": [22.5, 0.0, 15.0],
             "Rotation": [0.0, -120.0, 0.0],
-            "Properties": ["spawnTime=150.0", "currentTime=0.0"],
             "Script": [
                 {
-                    "Do": ["Edit(this.currentTime,this.currentTime+1)"]
-                },
-                {
-                    "When": ["Compare(this.currentTime==this.spawnTime)"],
-                    "Do": ["Edit(this.currentTime,0)", "Spawn(ZomBear, this)"]
+                    "When": ["Timer(2)"],
+                    "Do": ["Spawn(ZomBear,this)"]
                 }
             ]
         },
@@ -232,14 +217,10 @@
             "PrefabName": "ZomBunnySpawner",
             "Position": [-20.5, 0.0, 12.5],
             "Rotation": [0.0, 130.0, 0.0],
-            "Properties": ["spawnTime=150.0", "currentTime=0.0"],
             "Script": [
                 {
-                    "Do": ["Edit(this.currentTime,this.currentTime+1)"]
-                },
-                {
-                    "When": ["Compare(this.currentTime==this.spawnTime)"],
-                    "Do": ["Edit(this.currentTime,0)", "Spawn(ZomBunny, this)"]
+                    "When": ["Timer(3)"],
+                    "Do": ["Spawn(ZomBunny,this)"]
                 }
             ]
         },
@@ -247,13 +228,12 @@
             "ActorName":"HellephantDead",
             "PrefabName":"HellephantDead",
             "Active": false,
-            "Properties":["counter=30"],
             "Script": [
                 {
-                    "Do": ["Animate(Death)", "Edit(this.counter,this.counter-1)", "PlaySound(HellephantDeath)", "PlayParticles(DeathParticles)"]
+                    "Do": ["Animate(Death)", "PlaySound(HellephantDeath)", "PlayParticles(DeathParticles)"]
                 },
                 {
-                    "When": ["Compare(this.counter<0)"],
+                    "When": ["Timer(1)"],
                     "Do": ["Delete(this)"]
                 }
             ]
@@ -262,13 +242,12 @@
             "ActorName":"ZomBearDead",
             "PrefabName":"ZomBearDead",
             "Active": false,
-            "Properties":["counter=30"],
             "Script": [
                 {
-                    "Do": ["Animate(Death)", "Edit(this.counter,this.counter-1)", "PlaySound(ZomBearDeath)", "PlayParticles(DeathParticles)"]
+                    "Do": ["Animate(Death)", "PlaySound(ZomBearDeath)", "PlayParticles(DeathParticles)"]
                 },
                 {
-                    "When": ["Compare(this.counter<0)"],
+                    "When": ["Timer(1)"],
                     "Do": ["Delete(this)"]
                 }
             ]
@@ -277,13 +256,12 @@
             "ActorName":"ZomBunnyDead",
             "PrefabName":"ZomBunnyDead",
             "Active": false,
-            "Properties":["counter=30"],
             "Script": [
                 {
-                    "Do": ["Animate(Death)", "Edit(this.counter,this.counter-1)", "PlaySound(ZomBunnyDeath)", "PlayParticles(DeathParticles)"]
+                    "Do": ["Animate(Death)", "PlaySound(ZomBunnyDeath)", "PlayParticles(DeathParticles)"]
                 },
                 {
-                    "When": ["Compare(this.counter<0)"],
+                    "When": ["Timer(1)"],
                     "Do": ["Delete(this)"]
                 }
             ]
@@ -297,22 +275,10 @@
             "Properties": ["speed=50", "damage=5"],
             "Script": [
                 {
-                    "Do": ["Move(this.speed, 0, this.ry, 0)"]
+                    "Do": ["Move(this.speed,0,this.ry,0)"]
                 },
                 {
-                    "When": ["Collision(Hellephant)"],
-                    "Do": ["Delete(this)"]
-                },
-                {
-                    "When": ["Collision(ZomBear)"],
-                    "Do": ["Delete(this)"]
-                },
-                {
-                    "When": ["Collision(ZomBunny)"],
-                    "Do": ["Delete(this)"]
-                },
-                {
-                    "When": ["Collision(Obstacle)"],
+                    "When": ["Collision(Hellephant) OR Collision(ZomBear) OR Collision(ZomBunny) OR Collision(Obstacle)"],
                     "Do": ["Delete(this)"]
                 }
             ]
@@ -347,29 +313,21 @@
             "PrefabName":"HUDCanvas",
             "Script": [
                 {
-                    "Do": ["Edit(this.value,Player.health)", "Edit(this.text,Player.score)"]
+                    "Do": ["Edit(this.sliderValue,Player.health)", "Edit(this.text,#Score)"]
                 }
             ]
         },{
             "ActorName":"GameOver",
             "PrefabName":"GameOver",
             "Active": false,
-            "Properties":["counter=0"],
             "Script":[
                 {
-                "When":["Compare(this.counter<100)"],
-                "Do":["Animate(Idle)"]
-                },
-                {
-                "When":["Compare(this.counter==100)"],
+                "When":["Timer(2)"],
                 "Do":["Animate(GameOver)"]
                 },
                 {
-                "When":["Compare(this.counter==150)"],
-                "Do":["LoadScene()"]
-                },{
-                "When":["Compare(this.counter<=150)"],
-                "Do":["Edit(this.counter,this.counter+1)"]
+                "When":["Timer(3)"],
+                "Do":["Edit(#Score,0)", "LoadScene()"]
                 }
             ]
         }

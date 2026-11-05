@@ -6,7 +6,7 @@ public class HUDCanvas : MonoBehaviour, IGameRuleActor {
     private Dictionary<string, float> timers = new Dictionary<string, float>();
     public void EvalFixedUpdate(){
         {
-            Action.Edit("this.value","Player.health",scopeList);
+            Action.Edit("this.sliderValue","Player.health",scopeList);
             Action.Edit("this.text","#Score",scopeList);
         }
     }
@@ -14,7 +14,7 @@ public class HUDCanvas : MonoBehaviour, IGameRuleActor {
     }
     public Dictionary<string, GameObject> scopeList = new Dictionary<string, GameObject>();
     void Start() {
-        scopeList = Utils.CreateScope(gameObject.GetInstanceID(),"Edit(this.value,Player.health);Edit(this.text,#Score)");
+        scopeList = Utils.CreateScope(gameObject.GetInstanceID(),"Edit(this.sliderValue,Player.health);Edit(this.text,#Score)");
         if (Active) gameObject.SetActive(true);
         else gameObject.SetActive(false);
     }

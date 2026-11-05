@@ -1,0 +1,226 @@
+{
+    "GameName": "TANKS",
+    "CameraPosition": [-12, 20, 5],
+    "CameraRotation": [50, 60, 0],
+    "SunPosition": [0, 10, 0],
+    "SunRotation": [54.3, -26.2, 10.5],
+    "SunColor": [255, 200, 100],
+    "SunAmbientColor": [180, 180, 180],
+    "Cast": [
+        {
+            "ActorName": "LevelArt",
+            "PrefabName": "LevelArt",
+            "Tag":"Obstacle"
+        },
+        {
+            "ActorName": "BlueTank",
+            "PrefabName": "BlueTank",
+            "Tag":"BlueTank",
+            "Position": [-3.0, 0.0, 30.0],
+            "Rotation": [0.0, 180.0, 0.0],
+            "Drag": 0.2,
+            "Friction": 0.6,
+            "Velocity": [10.0, 0.0, 10.0],
+            "AngularVelocity": [0.0, 90.0, 0.0],
+            "Properties": ["speed=10", "angularSpeed=90", "health=100", "offsetY=1.7", "offsetZ=1.35", "maxAim=200", "currentAim=0"],
+            "Script": [
+                {
+                    "When": ["Keyboard(D,press)"],
+                    "Do": ["Rotate(this.angularSpeed,this.rx,this.ry,this.rz)", "PlayParticles(DustTrail)"]
+                },
+                {
+                    "When": ["Keyboard(A,press)"],
+                    "Do": ["Rotate(-this.angularSpeed,this.rx,this.ry,this.rz)", "PlayParticles(DustTrail)"]
+                },
+                {
+                    "When": ["Keyboard(W,press)"],
+                    "Do": ["Move(this.speed,0,this.ry,0)"]
+                },
+                {
+                    "When": ["Keyboard(S,press)"],
+                    "Do": ["Move(this.speed,0,this.ry+180,0)"]
+                },
+                {
+                    "When": ["Collision(Shell)"],
+                    "Do": ["Edit(this.health,this.health-Shell.damage)", "PushTo(-300,RedTank.x,RedTank.y,RedTank.z)"]
+                },
+                {
+                    "When": ["Compare(this.health<=0)"],
+                    "Do": ["Edit(RedWin.Active,1)"]
+                },
+                {
+                    "When": ["Keyboard(Space,press)"],
+                    "Do": ["Edit(this.currentAim,this.currentAim+1)", "PlaySound(ShotCharging)"]
+                },
+                {
+                    "When": ["Compare(this.currentAim>=this.maxAim)"],
+                    "Do": ["Edit(this.currentAim,this.maxAim)"]
+                },
+                {
+                    "When": ["Keyboard(Space,up)"],
+                    "Do": ["Spawn(Shell,this,0,this.offsetY,this.offsetZ)", "Edit(this.currentAim,0)", "PlaySound(ShotFiring)"]
+                }
+            ]
+        },
+        {
+            "ActorName": "RedTank",
+            "PrefabName": "RedTank",
+            "Tag":"RedTank",
+            "Position": [13.0, 0.0, -5.0],
+            "Rotation": [0.0, 0.0, 0.0],
+            "Drag": 0.2,
+            "Friction": 0.6,
+            "Properties": ["speed=10", "angularSpeed=90", "health=100", "offsetY=1.7", "offsetZ=1.35", "maxAim=200", "currentAim=0"],
+            "Script": [
+                {
+                    "When": ["Keyboard(RightArrow,press)"],
+                    "Do": ["Rotate(this.angularSpeed,this.rx,this.ry,this.rz)", "PlayParticles(DustTrail)"]
+                },
+                {
+                    "When": ["Keyboard(LeftArrow,press)"],
+                    "Do": ["Rotate(-this.angularSpeed,this.rx,this.ry,this.rz)", "PlayParticles(DustTrail)"]
+                },
+                {
+                    "When": ["Keyboard(UpArrow,press)"],
+                    "Do": ["Move(this.speed,0,this.ry,0)"]
+                },
+                {
+                    "When": ["Keyboard(DownArrow,press)"],
+                    "Do": ["Move(this.speed,0,this.ry+180,0)"]
+                },
+                {
+                    "When": ["Collision(Shell)"],
+                    "Do": ["Edit(this.health,this.health-Shell.damage)", "PushTo(-300,BlueTank.x,BlueTank.y,BlueTank.z)"]
+                },
+                {
+                    "When": ["Compare(this.health<=0)"],
+                    "Do": ["Edit(BlueWin.Active,1)"]
+                },
+                {
+                    "When": ["Keyboard(Enter,press)"],
+                    "Do": ["Edit(this.currentAim,this.currentAim+1)", "PlaySound(ShotCharging)"]
+                },
+                {
+                    "When": ["Compare(this.currentAim>=this.maxAim)"],
+                    "Do": ["Edit(this.currentAim,this.maxAim)"]
+                },
+                {
+                    "When": ["Keyboard(Enter,up)"],
+                    "Do": ["Spawn(Shell,this,0,this.offsetY,this.offsetZ)", "Edit(this.currentAim,0)", "PlaySound(ShotFiring)"]
+                }
+            ]
+        },
+        {
+            "ActorName": "Shell",
+            "PrefabName": "Shell",
+            "Tag":"Shell",
+            "Active": false,
+            "Properties": ["speed=15", "damage=50"],
+            "Script": [
+                {
+                    "Do": ["Move(this.speed,0,this.ry,0)"]
+                },
+                {
+                    "When": ["Collision(BlueTank)"],
+                    "Do": ["Spawn(ShellExplosion,this)", "Delete(this)"]
+                },
+                {
+                    "When": ["Collision(RedTank)"],
+                    "Do": ["Spawn(ShellExplosion,this)", "Delete(this)"]
+                },
+                {
+                    "When": ["Collision(Obstacle)"],
+                    "Do": ["Spawn(ShellExplosion,this)", "Delete(this)"]
+                }
+            ]
+        },
+        {
+            "ActorName": "ShellExplosion",
+            "PrefabName": "ShellExplosion",
+            "Active": false,
+            "Script": [
+                {
+                    "Do": ["PlayParticles(ShellExplosion)", "PlaySound(ShellExplosion)"]
+                },
+                {
+                    "When": ["Timer(0.5)"],
+                    "Do": ["Delete(this)"]
+                }
+            ]
+        },
+        {
+            "ActorName": "BlueAim",
+            "PrefabName": "BlueAim",
+            "Script": [
+                {
+                    "Do": ["Edit(this.x,BlueTank.x)", "Edit(this.y,BlueTank.y)", "Edit(this.z,BlueTank.z)", "Edit(this.ry,BlueTank.ry)", "Edit(this.sliderValue,BlueTank.currentAim)"]
+                }
+            ]
+        },
+        {
+            "ActorName": "RedAim",
+            "PrefabName": "RedAim",
+            "Script": [
+                {
+                    "Do": ["Edit(this.x,RedTank.x)", "Edit(this.y,RedTank.y)", "Edit(this.z,RedTank.z)", "Edit(this.ry,RedTank.ry)", "Edit(this.sliderValue,RedTank.currentAim)"]
+                }
+            ]
+        },
+        {
+            "ActorName": "RedHealth",
+            "PrefabName": "RedHealth",
+            "Properties": ["offsetY=0.05"],
+            "Script": [
+                {
+                    "Do": ["Edit(this.x,RedTank.x)", "Edit(this.y,RedTank.y+this.offsetY)", "Edit(this.z,RedTank.z)", "Edit(this.ry,RedTank.ry)", "Edit(this.sliderValue,RedTank.health)"]
+                }
+            ]
+        },
+        {
+            "ActorName": "BlueHealth",
+            "PrefabName": "BlueHealth",
+            "Properties": ["offsetY=0.05"],
+            "Script": [
+                {
+                    "Do": ["Edit(this.x,BlueTank.x)", "Edit(this.y,BlueTank.y+this.offsetY)", "Edit(this.z,BlueTank.z)", "Edit(this.ry,BlueTank.ry)", "Edit(this.sliderValue,BlueTank.health)"]
+                }
+            ]
+        },
+        {
+            "ActorName": "BlueWin",
+            "PrefabName": "BlueWin",
+            "Active": false,
+            "Script": [
+                {
+                    "When":["Timer(1)"],
+                    "Do":["LoadScene()"]
+                }
+            ]
+        },
+        {
+            "ActorName": "RedWin",
+            "PrefabName": "RedWin",
+            "Active": false,
+            "Script": [
+                {
+                    "When":["Timer(1)"],
+                    "Do":["LoadScene()"]
+                }
+            ]
+        },
+        {
+            "ActorName":"CameraManager",
+            "PrefabName":"CameraManager",
+            "Properties":["despX=15", "offsetY=15", "offsetZ=10"],
+            "Script": [
+                {
+                    "Do":[
+                            "Edit(#CameraPosition.x,(BlueTank.x+RedTank.x)/2 - this.despX)",
+                            "Edit(#CameraPosition.y,this.offsetY + (abs(BlueTank.x-RedTank.x)+abs(BlueTank.z-RedTank.z))/3)",
+                            "Edit(#CameraPosition.z,(BlueTank.z+RedTank.z)/2 - this.offsetZ)"
+                    ]
+                }
+            ]
+        }
+    ]
+}

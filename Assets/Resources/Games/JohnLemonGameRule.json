@@ -1,0 +1,192 @@
+{
+	"GameName": "JHON_LEMON",
+	"CameraPosition":[-9.8,5.6,-8.8],
+	"CameraRotation":[45,0.0,0.0],
+	"SunPosition":[0.0,3.0,0.0],
+	"SunRotation":[30.0,20.0,0.0],
+	"SunColor":[225,240,250],
+	"SunAmbientColor":[170,180,200],
+	"Cast": [
+		{
+			"ActorName":"House",
+			"PrefabName":"Level"
+		},
+		{
+			"ActorName":"End",
+			"PrefabName":"GameEnding",
+			"Tag":"End",
+			"Position":[18.0,1.0,1.5]
+		},
+		{
+			"ActorName":"Won",
+			"PrefabName":"Won",
+			"Active": false,
+			"Script":[
+				{
+				"When":["Timer(1)"],
+				"Do":["QuitGame()"]
+				}
+			]
+		},
+		{
+			"ActorName":"Caught",
+			"PrefabName":"Caught",
+			"Active": false,
+			"Script":[
+				{
+				"When":["Timer(1)"],
+				"Do":["LoadScene()"]
+				}
+			]
+		},
+		{
+			"ActorName":"John",
+			"PrefabName":"JohnLemon",
+			"Position":[-9.8,0.0,-3.2],
+			"Properties":["speed=1","offset=5.6","moving=0"],
+			"Script": [
+				{
+				"Do":["Edit(#CameraPosition.x,this.x)","Edit(#CameraPosition.z,this.z-this.offset)"]
+				},
+				{
+				"When":["Keyboard(RightArrow,press)"],
+				"Do":["Move(this.speed,0,90,0)","Edit(this.ry,90)","Edit(this.moving,1)"]
+				},
+				{
+				"When":["Keyboard(LeftArrow,press)"],
+				"Do":["Move(this.speed,0,-90,0)","Edit(this.ry,-90)","Edit(this.moving,1)"]
+				},
+				{
+				"When":["Keyboard(UpArrow,press)"],
+				"Do":["Move(this.speed,0,0,0)","Edit(this.ry,0)","Edit(this.moving,1)"]
+				},
+				{
+				"When":["Keyboard(DownArrow,press)"],
+				"Do":["Move(this.speed,0,180,0)","Edit(this.ry,180)","Edit(this.moving,1)"]
+				},
+				{
+				"When":["Keyboard(RightArrow,up) OR Keyboard(LeftArrow,up) OR Keyboard(UpArrow,up) OR Keyboard(DownArrow,up)"],
+				"Do":["Edit(this.moving,0)"]
+				},
+				{
+				"When":["Collision(Enemy)"],
+				"Do":["Edit(Caught.Active,1)"]
+				},
+				{
+				"When":["Collision(End)"],
+				"Do":["Edit(Won.Active,1)"]
+				},
+				{
+				"When":["NOT Check(this.moving)"],
+				"Do":["Animate(John_Idle)"]
+				},
+				{
+				"When":["Check(this.moving)"],
+				"Do":["Animate(John_Walk)","PlaySound(Footsteps)"]
+				}
+			]
+		},
+		{
+			"ActorName":"Gargoyle1",
+			"PrefabName":"Gargoyle",
+			"Tag": "Enemy",
+			"Position":[-2.6,0.0,-8.5],
+			"Rotation":[0.0,30.0,0.0]
+		},
+		{
+			"ActorName":"Gargoyle2",
+			"PrefabName":"Gargoyle",
+			"Tag": "Enemy",
+			"Position":[1.5,0.0,10.65],
+			"Rotation":[0.0,218.0,0.0]
+		},
+		{
+			"ActorName":"Ghost1",
+			"PrefabName":"Ghost",
+			"Tag": "Enemy",
+			"Position":[-5.5,0.0,-4.5],
+			"Properties":["speed=1.0","zTarget=6.4","z0=-4.5","z1=6.4"],
+			"Script":[
+				{
+				"Do":["NavigateTo(this.speed,this.x,this.y,this.zTarget)"]
+				},
+				{
+				"When":["Compare(this.z>=this.z1)"],
+				"Do":["Edit(this.zTarget,this.z0)"]
+				},
+				{
+				"When":["Compare(this.z<=this.z0)"],
+				"Do":["Edit(this.zTarget,this.z1)"]
+				}
+			]
+		},
+		{
+			"ActorName":"Ghost2",
+			"PrefabName":"Ghost",
+			"Tag": "Enemy",
+			"Position":[0.9,0.0,-3.5],
+			"Properties":["speed=1.0","zTarget=7.6","z0=-3.5","z1=7.6"],
+			"Script":[
+				{
+				"Do":["NavigateTo(this.speed,this.x,this.y,this.zTarget)"]
+				},
+				{
+				"When":["Compare(this.z>=this.z1)"],
+				"Do":["Edit(this.zTarget,this.z0)"]
+				},
+				{
+				"When":["Compare(this.z<=this.z0)"],
+				"Do":["Edit(this.zTarget,this.z1)"]
+				}
+			]
+		},
+		{
+			"ActorName":"Ghost3",
+			"PrefabName":"Ghost",
+			"Tag": "Enemy",
+			"Position":[3.3,0.0,5.8],
+			"Properties":["delta=0.5","speed=1.0","xTarget=3.2","zTarget=12.3","x0=3.2","x1=6.5","z0=5.7","z1=12.3"],
+			"Script":[
+				{
+				"Do":["NavigateTo(this.speed,this.xTarget,this.y,this.zTarget)"]
+				},
+				{
+					"When": ["Compare(this.z<this.z1+this.delta) AND Compare(this.z>this.z1-this.delta) AND Compare(this.x<this.x0+this.delta) AND Compare(this.x>this.x0-this.delta)"],
+					"Do": ["Edit(this.xTarget,this.x1)"]
+				},
+				{
+					"When": ["Compare(this.z<this.z1+this.delta) AND Compare(this.z>this.z1-this.delta) AND Compare(this.x<this.x1+this.delta) AND Compare(this.x>this.x1-this.delta)"],
+					"Do": ["Edit(this.zTarget,this.z0)"]
+				},
+				{
+					"When": ["Compare(this.z<this.z0+this.delta) AND Compare(this.z>this.z0-this.delta) AND Compare(this.x<this.x1+this.delta) AND Compare(this.x>this.x1-this.delta)"],
+					"Do": ["Edit(this.xTarget,this.x0)"]
+				},
+				{
+					"When": ["Compare(this.z<this.z0+this.delta) AND Compare(this.z>this.z0-this.delta) AND Compare(this.x<this.x0+this.delta) AND Compare(this.x>this.x0-this.delta)"],
+					"Do": ["Edit(this.zTarget,this.z1)"]
+				}
+			]
+		},
+		{
+			"ActorName":"Ghost4",
+			"PrefabName":"Ghost",
+			"Tag": "Enemy",
+			"Position":[3.2,0.0,-5.0],
+			"Properties":["delta=0.5","speed=1.0","xTarget=7.4","zTarget=-2.0","x0=3.2","x1=7.4","z0=-5","z1=-2"],
+			"Script":[
+				{
+				"Do":["NavigateTo(this.speed,this.xTarget,this.y,this.zTarget)"]
+				},
+				{
+					"When": ["Compare(this.z<this.z0+this.delta) AND Compare(this.z>this.z0-this.delta) AND Compare(this.x<this.x0+this.delta) AND Compare(this.x>this.x0-this.delta)"],
+					"Do": ["Edit(this.xTarget,this.x1)", "Edit(this.zTarget,this.z1)"]
+				},
+				{
+					"When": ["Compare(this.z<this.z1+this.delta) AND Compare(this.z>this.z1-this.delta) AND Compare(this.x<this.x1+this.delta) AND Compare(this.x>this.x1-this.delta)"],
+					"Do": ["Edit(this.xTarget,this.x0)", "Edit(this.zTarget,this.z0)"]
+				}
+			]
+		}
+	]
+}
